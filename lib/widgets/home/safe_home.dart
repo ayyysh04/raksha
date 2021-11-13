@@ -88,20 +88,25 @@ class _SafeHomeState extends State<SafeHome> {
                                 .bold
                                 .make(),
                       ),
+                      Spacer(),
                       Visibility(
                         visible: getHomeSafeActivated,
                         child: Padding(
-                            padding: const EdgeInsets.all(18.0),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 SpinKitDoubleBounce(
                                   color: Colors.red,
                                   size: 15,
                                 ),
                                 SizedBox(width: 15),
-                                Text("Currently Running...",
-                                    style: TextStyle(
-                                        color: Colors.red, fontSize: 10)),
+                                "Currently Running..."
+                                    .text
+                                    .size(10)
+                                    .color(Vx.black)
+                                    .make(),
                               ],
                             )),
                       ),

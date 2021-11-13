@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:badges/badges.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -162,6 +165,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  StreamSubscription? backgroundState;
   Future<dynamic> fetchNews() async {
     dynamic response;
     try {
@@ -199,7 +203,27 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
+    final service = FlutterBackgroundService();
+    StreamSubscription backgroundState =
+        service.onDataReceived.listen((event) async {
+      if (event?["action"] == "setStateAlert") {
+        prefs = await SharedPreferences.getInstance();
+        await prefs?.reload();
+        if (mounted)
+          setState(() {
+            print("op");
+            alerted = prefs?.getBool("alerted") ?? false;
+          });
+      }
+    });
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    backgroundState?.cancel();
+    super.dispose();
   }
 
   SharedPreferences? prefs;
@@ -265,9 +289,9 @@ class _HomeState extends State<Home> {
                 SharedPreferences prefs = await SharedPreferences.getInstance();
                 int pin = (prefs.getInt('pin') ?? -1111);
                 print(pin);
-                // setState(() {
-                //   alerted = alertedCallBack;
-                // });
+                await prefs.reload();
+                alerted = prefs.getBool("alerted");
+
                 if (alertedCallBack) //turn on sos
                 {
                   int pin = (prefs.getInt('pin') ?? -1111);
@@ -313,7 +337,7 @@ class _HomeState extends State<Home> {
                         width: 120,
                         child: ElevatedButton(
                           onPressed: () async {
-                            await Telephony.instance.dialPhoneNumber("*121#");
+                            await Telephony.instance.dialPhoneNumber("100");
                           },
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -328,7 +352,9 @@ class _HomeState extends State<Home> {
                       SizedBox(
                         width: 150,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            await Telephony.instance.dialPhoneNumber("1091");
+                          },
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -343,7 +369,9 @@ class _HomeState extends State<Home> {
                         width: 150,
                         child: ElevatedButton(
                           clipBehavior: Clip.antiAlias,
-                          onPressed: () {},
+                          onPressed: () async {
+                            await Telephony.instance.dialPhoneNumber("1291");
+                          },
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -357,7 +385,9 @@ class _HomeState extends State<Home> {
                       SizedBox(
                         width: 150,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            await Telephony.instance.dialPhoneNumber("101");
+                          },
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -371,7 +401,9 @@ class _HomeState extends State<Home> {
                       SizedBox(
                         width: 150,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            await Telephony.instance.dialPhoneNumber("102");
+                          },
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -387,7 +419,9 @@ class _HomeState extends State<Home> {
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                               padding: EdgeInsets.symmetric(horizontal: 5)),
-                          onPressed: () {},
+                          onPressed: () async {
+                            await Telephony.instance.dialPhoneNumber("112");
+                          },
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -504,8 +538,8 @@ class _HomeState extends State<Home> {
     }
   }
 
-  void sendSMS(String number, String msgText) {
-    Telephony.backgroundInstance.sendSms(to: number, message: msgText);
+  Future<void> sendSMS(String number, String msgText) async {
+    await Telephony.backgroundInstance.sendSms(to: number, message: msgText);
     // print(number);
     // print(msgText);
     // smsSender.SmsMessage msg = new smsSender.SmsMessage(number, msgText);
@@ -544,7 +578,7 @@ class _HomeState extends State<Home> {
     });
     checkPermission();
 
-    prefs.setBool("alerted", isAlert);
+    // prefs.setBool("alerted", isAlert);
     List<String> numbers = prefs.getStringList("numbers") ?? [];
 
     LocationData? myLocation;
@@ -564,11 +598,6 @@ class _HomeState extends State<Home> {
           backgroundColor: Colors.red,
         );
       } else {
-        //var coordinates =
-        //    Coordinates(currentLocation.latitude, currentLocation.longitude);
-        //var addresses =
-        //    await Geocoder.local.findAddressesFromCoordinates(coordinates);
-        // var first = addresses.first;
         String li =
             "http://maps.google.com/?q=${currentLocation.latitude},${currentLocation.longitude}";
         if (isAlert) {
@@ -643,7 +672,6 @@ class _HomeState extends State<Home> {
                     ),
                   ],
                 ),
-                // Image.asset("assets/pin.png"),
                 Container(
                   margin: const EdgeInsets.all(20.0),
                   padding: const EdgeInsets.all(20.0),

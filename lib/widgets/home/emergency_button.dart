@@ -85,9 +85,9 @@ class _EmergencyButtonState extends State<EmergencyButton>
                 child: _button(),
                 onTap: () {
                   if (widget.alerted == null || widget.alerted == false)
-                    widget.onPressed(true);
-                  else
                     widget.onPressed(false);
+                  else
+                    widget.onPressed(true);
                 },
               ),
             )),

@@ -49,7 +49,8 @@ void onStart() async {
     prefs.setStringList("location",
         [location.latitude.toString(), location.longitude.toString()]);
   });
-  String screenShake = "Be strong, We are with you!";
+  String screenShake = "We are always with you!";
+
   ShakeDetector.autoStart(
       shakeThresholdGravity: 2,
       onPhoneShake: () async {
@@ -91,9 +92,13 @@ void onStart() async {
             } else {
               for (int i = 0; i < numbers.length; i++) {
                 Telephony.backgroundInstance.sendSms(
-                    to: numbers[i], message: "Help Me! Track me here.\n$link");
+                    to: numbers[i].split("***")[1],
+                    message: "Help Me! Track me here.\n$link");
               }
               prefs.setBool("alerted", true);
+              FlutterBackgroundService().sendData(
+                {"action": "setStateAlert"},
+              );
               screenShake = "SOS alert Sent! Help is on the way.";
             }
           } on PlatformException catch (e) {
@@ -121,7 +126,7 @@ void onStart() async {
     if (!(await service.isServiceRunning())) timer.cancel();
 
     service.setNotificationInfo(
-      title: "Safe Shake activated!",
+      title: "Shake to SOS is enabled",
       content: screenShake,
     );
 
@@ -130,8 +135,6 @@ void onStart() async {
     );
   });
 }
-
-//GET HOME SAFE _ WORK MANAGER SET TO 15 minutes frequency
 
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
