@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:badges/badges.dart';
+import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -10,11 +11,14 @@ import 'package:line_icons/line_icons.dart';
 import 'package:location/location.dart';
 import 'package:marquee/marquee.dart';
 import 'package:pinput/pin_put/pin_put.dart';
+import 'package:raksha/Utils/home/customer_painter/curve_wave.dart';
 import 'package:raksha/pages/ContactScreens/my_contacts.dart';
+import 'package:raksha/pages/settings/settings_screen.dart';
 import 'package:raksha/widgets/home/emergency_button.dart';
 import 'package:raksha/widgets/home/safe_home.dart';
 import 'package:raksha/widgets/home/women_quote_carousel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:telephony/telephony.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:http/http.dart' as http;
@@ -32,11 +36,11 @@ class _HomePageState extends State<HomePage> {
   bool alerted = false;
   final TextEditingController _pinPutController = TextEditingController();
   final FocusNode _pinPutFocusNode = FocusNode();
-  List<Widget> _pages = [Home(), MyContactsScreen(), Container()];
+  List<Widget> _pages = [Home(), MyContactsScreen(), SettingsScreen()];
   PageController controller = PageController();
   int selectedIndex = 0;
   int badge = 0;
-  int _selectedIndex = 0;
+  // int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -47,7 +51,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
+      // extendBody: true,
       appBar: AppBar(
         title: "Raksha".text.xl3.make(),
         centerTitle: true,
@@ -61,8 +65,9 @@ class _HomePageState extends State<HomePage> {
         itemCount: 3,
         onPageChanged: (page) {
           setState(() {
+            // print(page);
             selectedIndex = page;
-            badge = badge + 1;
+            // badge = badge + 1;
           });
         },
         controller: controller,
@@ -84,10 +89,10 @@ class _HomePageState extends State<HomePage> {
               tabs: [
                 GButton(
                   gap: 10,
-                  iconActiveColor: Colors.purple,
+                  iconActiveColor: Vx.red500,
                   iconColor: Colors.black,
-                  textColor: Colors.purple,
-                  backgroundColor: Colors.purple.withOpacity(.2),
+                  textColor: Vx.red500,
+                  backgroundColor: Vx.red200,
                   iconSize: 24,
                   padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                   icon: LineIcons.home,
@@ -95,10 +100,10 @@ class _HomePageState extends State<HomePage> {
                 ),
                 GButton(
                   gap: 10,
-                  iconActiveColor: Colors.pink,
+                  iconActiveColor: Vx.red500,
                   iconColor: Colors.black,
-                  textColor: Colors.pink,
-                  backgroundColor: Colors.pink.withOpacity(.2),
+                  textColor: Vx.red500,
+                  backgroundColor: Vx.red200,
                   iconSize: 24,
                   padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                   icon: LineIcons.phone,
@@ -118,37 +123,28 @@ class _HomePageState extends State<HomePage> {
                                 selectedIndex == 1 ? Colors.pink : Colors.black,
                           ),
                         ),
-                  text: 'Likes',
+                  text: 'Contacts',
                 ),
                 GButton(
                   gap: 10,
-                  iconActiveColor: Colors.amber[600],
+                  iconActiveColor: Vx.red500,
                   iconColor: Colors.black,
-                  textColor: Colors.amber[600],
-                  backgroundColor: Colors.amber[600]!.withOpacity(.2),
+                  textColor: Vx.red500,
+                  backgroundColor: Vx.red200,
                   iconSize: 24,
                   padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                  icon: LineIcons.search,
-                  text: 'Search',
+                  icon: Icons.settings_outlined,
+                  text: 'Settings',
                 ),
-                GButton(
-                  gap: 10,
-                  iconActiveColor: Colors.teal,
-                  iconColor: Colors.black,
-                  textColor: Colors.teal,
-                  backgroundColor: Colors.teal.withOpacity(.2),
-                  iconSize: 24,
-                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                  icon: LineIcons.user,
-                  text: 'User',
-                )
               ],
               selectedIndex: selectedIndex,
               onTabChange: (index) {
                 setState(() {
-                  selectedIndex = index;
+                  // selectedIndex = index;
+                  controller.animateToPage(index,
+                      duration: Duration(seconds: 1),
+                      curve: Curves.fastOutSlowIn);
                 });
-                // controller.jumpToPage(index);
               },
             ),
           ),
@@ -218,247 +214,265 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              FutureBuilder(
-                initialData: null,
-                future: fetchNews(),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  String news = "";
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            FutureBuilder(
+              initialData: null,
+              future: fetchNews(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                String news = "";
 
-                  if (snapshot.hasData) {
-                    for (int i = 0; i < snapshot.data.length; i++) {
-                      news = news + snapshot.data[i]["source"]["name"] + ":";
-                      news = news + snapshot.data[i]["title"];
-                      news = news + ". ";
-                    }
-                  } else
-                    news = "No Internet                         ";
+                if (snapshot.hasData) {
+                  for (int i = 0; i < snapshot.data.length; i++) {
+                    news = news + snapshot.data[i]["source"]["name"] + ":";
+                    news = news + snapshot.data[i]["title"];
+                    news = news + ". ";
+                  }
+                } else
+                  news = "No Internet                         ";
 
-                  return Container(
-                    padding: EdgeInsets.symmetric(horizontal: 5),
-                    decoration: BoxDecoration(
-                        border: Border.all(width: 2),
-                        borderRadius: BorderRadius.circular(10)),
-                    height: 50,
-                    child: Marquee(
-                      text: news,
+                return Container(
+                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 2),
+                      borderRadius: BorderRadius.circular(10)),
+                  height: 50,
+                  child: Marquee(
+                    text: news,
+                  ),
+                );
+              },
+            ),
+            5.heightBox,
+            EmergencyButton(
+              message: (alerted == null || alerted == false)
+                  ? "Tap in case \nof emergency"
+                  : "Help is in the way!\n Stay Strong",
+              child: (alerted == null || alerted == false)
+                  ? Image.asset(
+                      "assets/images/alert.png",
+                      width: 70,
+                      height: 70,
+                    )
+                  : Image.asset(
+                      "assets/images/alarm.png",
+                      width: 70,
+                      height: 70,
                     ),
-                  );
-                },
-              ),
-
-              5.heightBox,
-              EmergencyButton(
-                message: (alerted == null || alerted == false)
-                    ? "Tap in case \nof emergency"
-                    : "Help is in the way!\n Stay Strong",
-                child: (alerted == null || alerted == false)
-                    ? Image.asset(
-                        "assets/images/alert.png",
-                        width: 70,
-                        height: 70,
-                      )
-                    : Image.asset(
-                        "assets/images/alarm.png",
-                        width: 70,
-                        height: 70,
-                      ),
-                onPressed: (alertedCallBack) {
-                  int pin = (prefs?.getInt('pin') ?? -1111);
-
-                  // setState(() {
-                  //   alerted = alertedCallBack;
-                  // });
+              onPressed: (alertedCallBack) async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                int pin = (prefs.getInt('pin') ?? -1111);
+                print(pin);
+                // setState(() {
+                //   alerted = alertedCallBack;
+                // });
+                if (alertedCallBack) //turn on sos
+                {
+                  int pin = (prefs.getInt('pin') ?? -1111);
+                  print('User $pin .');
                   if (pin == -1111) {
                     sendAlertSMS(false);
                   } else {
                     showPinModelBottomSheet(pin);
                   }
-
-                  // } else {
-                  //   sendAlertSMS(true);
-                },
-                alerted: alerted,
-              ).centered(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: const Text(
-                      "Emergency",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 80,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: <Widget>[
-                    SizedBox(
-                      width: 120,
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            "Police".text.bold.make(),
-                            "100".text.make()
-                          ],
-                        ),
-                      ),
-                    ),
-                    5.widthBox,
-                    SizedBox(
-                      width: 150,
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            "Women Helpline".text.center.bold.make(),
-                            "1091".text.make()
-                          ],
-                        ),
-                      ),
-                    ),
-                    5.widthBox,
-                    SizedBox(
-                      width: 150,
-                      child: ElevatedButton(
-                        clipBehavior: Clip.antiAlias,
-                        onPressed: () {},
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            "Senior Citizen Helpline".text.center.bold.make(),
-                            "1291".text.make()
-                          ],
-                        ),
-                      ),
-                    ),
-                    5.widthBox,
-                    SizedBox(
-                      width: 150,
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            "FIRE".text.center.bold.make(),
-                            "101".text.make()
-                          ],
-                        ),
-                      ),
-                    ),
-                    5.widthBox,
-                    SizedBox(
-                      width: 150,
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            "AMBULANCE".text.center.bold.make(),
-                            "102".text.make()
-                          ],
-                        ),
-                      ),
-                    ),
-                    5.widthBox,
-                    SizedBox(
-                      width: 150,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(horizontal: 5)),
-                        onPressed: () {},
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            "NATIONAL EMERGENCY NUMBER".text.center.bold.make(),
-                            "112".text.make()
-                          ],
-                        ),
+                } else {
+                  sendAlertSMS(true); //turn off sos
+                }
+              },
+              alerted: alerted,
+            ).centered(),
+            Row(
+              children: [
+                "Tools".text.size(20).bold.make(),
+                5.widthBox,
+                Divider().expand(),
+              ],
+            ),
+            SingleChildScrollView(
+              child: Column(children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: const Text(
+                        "Emergency",
+                        style: TextStyle(fontSize: 20),
                       ),
                     ),
                   ],
                 ),
-              ),
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "Safe Places Nearby",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
+                SizedBox(
                   height: 80,
                   child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: <Widget>[
-                        SizedBox(
-                          width: 120,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              await openGoogleMap("Police Stations near me");
-                            },
-                            child: "Police Stations".text.bold.make(),
+                    scrollDirection: Axis.horizontal,
+                    children: <Widget>[
+                      SizedBox(
+                        width: 120,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            await Telephony.instance.dialPhoneNumber("*121#");
+                          },
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              "Police".text.bold.make(),
+                              "100".text.make()
+                            ],
                           ),
                         ),
-                        5.widthBox,
-                        SizedBox(
-                          width: 120,
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            child: "Hospitals".text.bold.make(),
+                      ),
+                      5.widthBox,
+                      SizedBox(
+                        width: 150,
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              "Women Helpline".text.center.bold.make(),
+                              "1091".text.make()
+                            ],
                           ),
                         ),
-                        5.widthBox,
-                        SizedBox(
-                          width: 120,
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            child: "Pharmacies".text.bold.make(),
+                      ),
+                      5.widthBox,
+                      SizedBox(
+                        width: 150,
+                        child: ElevatedButton(
+                          clipBehavior: Clip.antiAlias,
+                          onPressed: () {},
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              "Senior Citizen Helpline".text.center.bold.make(),
+                              "1291".text.make()
+                            ],
                           ),
                         ),
-                        5.widthBox,
-                        SizedBox(
-                          width: 120,
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            child: "Bus Stations".text.bold.make(),
+                      ),
+                      5.widthBox,
+                      SizedBox(
+                        width: 150,
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              "FIRE".text.center.bold.make(),
+                              "101".text.make()
+                            ],
                           ),
                         ),
-                        5.widthBox,
-                      ])),
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "Location SafeGaurd",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                    ),
+                      ),
+                      5.widthBox,
+                      SizedBox(
+                        width: 150,
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              "AMBULANCE".text.center.bold.make(),
+                              "102".text.make()
+                            ],
+                          ),
+                        ),
+                      ),
+                      5.widthBox,
+                      SizedBox(
+                        width: 150,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(horizontal: 5)),
+                          onPressed: () {},
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              "NATIONAL EMERGENCY NUMBER"
+                                  .text
+                                  .center
+                                  .bold
+                                  .make(),
+                              "112".text.make()
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              SafeHome()
-              // WomenQuoteCarousel(),
-            ],
-          ),
+                ),
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: "Safe Places Nearby".text.size(20).make(),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                    height: 80,
+                    child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        children: <Widget>[
+                          SizedBox(
+                            width: 120,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                await openGoogleMap("Police Stations near me");
+                              },
+                              child: "Police Stations".text.bold.make(),
+                            ),
+                          ),
+                          5.widthBox,
+                          SizedBox(
+                            width: 120,
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              child: "Hospitals".text.bold.make(),
+                            ),
+                          ),
+                          5.widthBox,
+                          SizedBox(
+                            width: 120,
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              child: "Pharmacies".text.bold.make(),
+                            ),
+                          ),
+                          5.widthBox,
+                          SizedBox(
+                            width: 120,
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              child: "Bus Stations".text.bold.make(),
+                            ),
+                          ),
+                          5.widthBox,
+                        ])),
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: "Location SafeGaurd".text.size(20).make(),
+                    )
+                  ],
+                ),
+                SafeHome(),
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: "Saftey Tips".text.size(20).make(),
+                    )
+                  ],
+                ),
+                WomenQuoteCarousel(),
+              ]),
+            ).expand(),
+          ],
         ),
       ),
     );
@@ -485,9 +499,13 @@ class _HomeState extends State<Home> {
     if (smsPer != appPermissions.PermissionStatus.granted) {
       await appPermissions.Permission.sms.request();
     }
+    if (phonePer != appPermissions.PermissionStatus.granted) {
+      await appPermissions.Permission.phone.request();
+    }
   }
 
   void sendSMS(String number, String msgText) {
+    Telephony.backgroundInstance.sendSms(to: number, message: msgText);
     // print(number);
     // print(msgText);
     // smsSender.SmsMessage msg = new smsSender.SmsMessage(number, msgText);
@@ -528,6 +546,7 @@ class _HomeState extends State<Home> {
 
     prefs.setBool("alerted", isAlert);
     List<String> numbers = prefs.getStringList("numbers") ?? [];
+
     LocationData? myLocation;
     String error;
     Location location = new Location();
@@ -535,7 +554,6 @@ class _HomeState extends State<Home> {
     try {
       myLocation = await location.getLocation();
       var currentLocation = myLocation;
-
       if (numbers.isEmpty) {
         setState(() {
           prefs.setBool("alerted", false);
@@ -625,7 +643,7 @@ class _HomeState extends State<Home> {
                     ),
                   ],
                 ),
-                Image.asset("assets/pin.png"),
+                // Image.asset("assets/pin.png"),
                 Container(
                   margin: const EdgeInsets.all(20.0),
                   padding: const EdgeInsets.all(20.0),

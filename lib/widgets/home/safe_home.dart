@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:raksha/pages/ContactScreens/phonebook_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:velocity_x/velocity_x.dart';
 import 'package:workmanager/workmanager.dart';
 
 class SafeHome extends StatefulWidget {
@@ -60,8 +61,10 @@ class _SafeHomeState extends State<SafeHome> {
           ),
           child: Container(
             height: 180,
-            width: MediaQuery.of(context).size.width * 0.7,
             decoration: BoxDecoration(
+              image: const DecorationImage(
+                  fit: BoxFit.fill,
+                  image: AssetImage("assets/images/safehome.jpg")),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
@@ -69,11 +72,21 @@ class _SafeHomeState extends State<SafeHome> {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       ListTile(
-                        title: Text("Get Home Safe"),
-                        subtitle: Text("Share Location Periodically"),
+                        title: "GO TO HOME SAFELY"
+                            .text
+                            .color(Vx.black)
+                            .xl
+                            .bold
+                            .make(),
+                        subtitle:
+                            "Share Location Periodically to your Loved ones"
+                                .text
+                                .color(Vx.black)
+                                .bold
+                                .make(),
                       ),
                       Visibility(
                         visible: getHomeSafeActivated,
@@ -95,12 +108,6 @@ class _SafeHomeState extends State<SafeHome> {
                     ],
                   ),
                 ),
-                // ClipRRect(
-                //     borderRadius: BorderRadius.circular(20),
-                //     child: Image.asset(
-                //       "assets/route.jpg",
-                //       height: 140,
-                //     ))
               ],
             ),
           ),
@@ -214,9 +221,12 @@ class _SafeHomeState extends State<SafeHome> {
                                           });
                                         },
                                         leading: CircleAvatar(
-                                          backgroundImage:
-                                              AssetImage("assets/user.png"),
-                                        ),
+                                            backgroundColor: Vx.white,
+                                            child: Icon(
+                                              Icons.account_circle,
+                                              size: 40,
+                                              color: Vx.red400,
+                                            )),
                                         title:
                                             Text(contactData.split("***")[0]),
                                         subtitle:

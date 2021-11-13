@@ -144,11 +144,18 @@ class _PhoneBookState extends State<PhoneBook> {
               hintStyle: TextStyle(color: Colors.white70)),
           onChanged: (string) {
             setState(() {
-              filteredContacts = _contacts!
-                  .where((c) => (c.displayName!
+              filteredContacts = _contacts!.where((c) {
+                if (c.displayName != null) {
+                  return c.displayName!
                       .toLowerCase()
-                      .contains(string.toLowerCase())))
-                  .toList();
+                      .contains(string.toLowerCase());
+                  //      ||
+                  // c.phones![0].value!
+                  //     .toLowerCase()
+                  //     .contains(string.toLowerCase());
+                }
+                return false;
+              }).toList();
             });
           },
         ),
@@ -218,7 +225,7 @@ class _PhoneBookState extends State<PhoneBook> {
       newPhone = "+" + newPhone.substring(0, newPhone.length);
     }
     if (newPhone.length == 11) {
-      newPhone = "+92" + newPhone.substring(1, newPhone.length);
+      newPhone = "+91" + newPhone.substring(1, newPhone.length);
     }
     if (newPhone.length > 12) {
       var start2Number = newPhone.substring(0, 2);
@@ -226,7 +233,7 @@ class _PhoneBookState extends State<PhoneBook> {
         newPhone = "+" + newPhone.substring(0, 12);
       }
       if (start2Number == "03") {
-        newPhone = "+92" + newPhone.substring(1, newPhone.length);
+        newPhone = "+91" + newPhone.substring(1, newPhone.length);
       }
     }
 

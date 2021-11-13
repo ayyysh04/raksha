@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:raksha/pages/ContactScreens/phonebook_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 class MyContactsScreen extends StatefulWidget {
   const MyContactsScreen({Key? key}) : super(key: key);
@@ -14,20 +16,32 @@ class _MyContactsScreenState extends State<MyContactsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Vx.red400,
+        onPressed: () {
+          Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => PhoneBook()))
+              .whenComplete(() {
+            setState(() {});
+          });
+        },
+        child: Icon(Icons.add),
+      ),
       backgroundColor: Color(0xFFFAFCFE),
       appBar: AppBar(
-          centerTitle: true,
-          elevation: 0,
-          title: Text(
-            "SOS Contacts",
-            style: TextStyle(
-                fontSize: 26, fontWeight: FontWeight.w900, color: Colors.black),
-          ),
-          backgroundColor: Colors.transparent,
-          leading: IconButton(
-            icon: Image.asset("assets/phone_red.png"),
-            onPressed: () {},
-          )),
+        centerTitle: true,
+        elevation: 0,
+        title: Text(
+          "SOS Contacts",
+          style: TextStyle(
+              fontSize: 26, fontWeight: FontWeight.w900, color: Colors.black),
+        ),
+        backgroundColor: Colors.transparent,
+        // leading: IconButton(
+        //   icon: Image.asset("assets/phone_red.png"),
+        //   onPressed: () {},
+        // )
+      ),
       body: FutureBuilder(
           future: checkforContacts(),
           builder: (context, AsyncSnapshot<List<String>> snap) {
@@ -59,8 +73,8 @@ class _MyContactsScreenState extends State<MyContactsScreen> {
                       itemCount: snap.data!.length,
                       itemBuilder: (context, index) {
                         return Slidable(
-                          startActionPane: ActionPane(
-                            motion: ScrollMotion(),
+                          endActionPane: ActionPane(
+                            motion: DrawerMotion(),
                             children: [
                               SlidableAction(
                                 label: 'Delete',
@@ -84,15 +98,17 @@ class _MyContactsScreenState extends State<MyContactsScreen> {
                           child: Container(
                             color: Colors.white,
                             child: ListTile(
-                              leading: CircleAvatar(
-                                backgroundColor: Colors.grey[200],
-                                backgroundImage: AssetImage("assets/user.png"),
+                              leading: Icon(
+                                Icons.account_circle,
+                                size: 40,
                               ),
-                              title: Text(snap.data![index].split("***")[0] ??
-                                  "No Name"),
-                              subtitle: Text(
-                                  snap.data![index].split("***")[1] ??
-                                      "No Contact"),
+                              title: Text(snap.data![index].split("***")[0]
+                                  // ??                                  "No Name"
+                                  ),
+                              subtitle: Text(snap.data![index].split("***")[1]
+                                  // ??
+                                  //     "No Contact"
+                                  ),
                             ),
                           ),
                         );

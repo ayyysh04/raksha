@@ -34,11 +34,11 @@ void onStart() async {
   });
   Location? _location;
 
-  // await BackgroundLocation.setAndroidNotification(
-  //   title: "Location tracking is running in the background!",
-  //   message: "You can turn it off from settings menu inside the app",
-  //   // icon: '@mipmap/ic_logo',
-  // );
+  await BackgroundLocation.setAndroidNotification(
+    title: "Location tracking is running in the background!",
+    message: "You can turn it off from settings inside the app",
+    // icon: '@mipmap/ic_logo',
+  );
   BackgroundLocation.startLocationService(
     distanceFilter: 20,
   );
@@ -53,21 +53,21 @@ void onStart() async {
   ShakeDetector.autoStart(
       shakeThresholdGravity: 2,
       onPhoneShake: () async {
-        print("Test 1");
-        if ((await Vibration.hasVibrator() ?? false) != null) {
-          print("Test 2");
-          if (await Vibration.hasCustomVibrationsSupport() ?? false) {
-            print("Test 3");
-            Vibration.vibrate(duration: 1000);
-          } else {
-            print("Test 4");
-            Vibration.vibrate();
-            await Future.delayed(Duration(milliseconds: 500));
-            Vibration.vibrate();
-          }
-          print("Test 5");
-        }
-        print("Test 6");
+        // print("Test 1");
+        // if ((await Vibration.hasVibrator() ?? false) != null) {
+        //   print("Test 2");
+        //   if (await Vibration.hasCustomVibrationsSupport() ?? false) {
+        //     print("Test 3");
+        //     Vibration.vibrate(duration: 1000);
+        //   } else {
+        //     print("Test 4");
+        //     Vibration.vibrate();
+        //     await Future.delayed(Duration(milliseconds: 500));
+        //     Vibration.vibrate();
+        //   }
+        //   print("Test 5");
+        // }
+        // print("Test 6");
         String link = '';
         print("Test 7");
         try {
@@ -79,6 +79,7 @@ void onStart() async {
           SharedPreferences prefs = await SharedPreferences.getInstance();
 
           List<String> numbers = prefs.getStringList("numbers") ?? [];
+
           String error;
           try {
             if (numbers.isEmpty) {
