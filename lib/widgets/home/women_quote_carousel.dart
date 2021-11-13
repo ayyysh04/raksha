@@ -2,7 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:raksha/Utils/home/women_quote_carousel.dart';
 
-class WomenQuoteCarousel extends StatelessWidget {
+class WomenSafteyTipsCarousel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -27,7 +27,13 @@ class WomenQuoteCarousel extends StatelessWidget {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
                           image: DecorationImage(
-                              image: NetworkImage(imageSliders[index]),
+                              image: Image.network(
+                                imageSliders[index],
+                                errorBuilder: (BuildContext context,
+                                    Object exception, StackTrace? stackTrace) {
+                                  return SizedBox();
+                                },
+                              ).image,
                               fit: BoxFit.cover),
                         ),
                         child: Container(

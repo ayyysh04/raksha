@@ -50,8 +50,10 @@ dependencies:
   marquee: ^2.2.0
   permission_handler: ^8.1.6
   pinput: ^1.2.2
+  restart_app: ^1.1.0
   shake: ^2.0.0
   shared_preferences: ^2.0.8
+  speech_to_text: ^5.2.0
   telephony: ^0.1.4
   url_launcher: ^6.0.12
   velocity_x: ^3.3.0

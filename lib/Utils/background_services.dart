@@ -14,9 +14,9 @@ const simplePeriodicTask = "simplePeriodicTask";
 void onStart() async {
   WidgetsFlutterBinding.ensureInitialized();
   final service = FlutterBackgroundService();
-
+  String screenShake = "We are always with you!";
   SharedPreferences prefs = await SharedPreferences.getInstance();
-
+  await prefs.reload();
   service.onDataReceived.listen((event) async {
     if (event!["action"] == "setAsForeground") {
       service.setForegroundMode(true);
@@ -31,53 +31,47 @@ void onStart() async {
     if (event["action"] == "stopService") {
       service.stopBackgroundService();
     }
+    if (event["action"] == "alertOff") {
+      screenShake = "We are always with you!";
+    }
   });
   Location? _location;
+  if (prefs.getBool("switchLocationNotify") ?? true) {
+    try {
+      await BackgroundLocation.setAndroidNotification(
+        title: "Location tracking is running in the background!",
+        message: "You can turn it off from settings inside the app",
+        // icon: '@mipmap/ic_logo',
+      );
+    } catch (e) {}
+  }
 
-  await BackgroundLocation.setAndroidNotification(
-    title: "Location tracking is running in the background!",
-    message: "You can turn it off from settings inside the app",
-    // icon: '@mipmap/ic_logo',
-  );
   BackgroundLocation.startLocationService(
     distanceFilter: 20,
   );
 
-  BackgroundLocation.getLocationUpdates((location) {
+  BackgroundLocation.getLocationUpdates((location) async {
+    print(location.altitude);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     _location = location;
 
-    prefs.setStringList("location",
+    await prefs.setStringList("location",
         [location.latitude.toString(), location.longitude.toString()]);
   });
-  String screenShake = "We are always with you!";
-
   ShakeDetector.autoStart(
-      shakeThresholdGravity: 2,
+      shakeThresholdGravity: 3.7,
       onPhoneShake: () async {
-        // print("Test 1");
-        // if ((await Vibration.hasVibrator() ?? false) != null) {
-        //   print("Test 2");
-        //   if (await Vibration.hasCustomVibrationsSupport() ?? false) {
-        //     print("Test 3");
-        //     Vibration.vibrate(duration: 1000);
-        //   } else {
-        //     print("Test 4");
-        //     Vibration.vibrate();
-        //     await Future.delayed(Duration(milliseconds: 500));
-        //     Vibration.vibrate();
-        //   }
-        //   print("Test 5");
-        // }
-        // print("Test 6");
+        if (await Vibration.hasVibrator() ?? false) {
+          Vibration.vibrate();
+        }
         String link = '';
-        print("Test 7");
         try {
           double? lat = _location?.latitude;
           double? long = _location?.longitude;
           print("$lat ... $long");
           print("Test 9");
           link = "http://maps.google.com/?q=$lat,$long";
-          SharedPreferences prefs = await SharedPreferences.getInstance();
+          // SharedPreferences prefs = await SharedPreferences.getInstance();
 
           List<String> numbers = prefs.getStringList("numbers") ?? [];
 
@@ -91,9 +85,9 @@ void onStart() async {
               return;
             } else {
               for (int i = 0; i < numbers.length; i++) {
-                Telephony.backgroundInstance.sendSms(
-                    to: numbers[i].split("***")[1],
-                    message: "Help Me! Track me here.\n$link");
+                // Telephony.backgroundInstance.sendSms(
+                //     to: numbers[i].split("***")[1],
+                //     message: "Help Me! Track me here.\n$link");
               }
               prefs.setBool("alerted", true);
               FlutterBackgroundService().sendData(
@@ -130,9 +124,9 @@ void onStart() async {
       content: screenShake,
     );
 
-    service.sendData(
-      {"current_date": DateTime.now().toIso8601String()},
-    );
+    // service.sendData(
+    //   {"current_date": DateTime.now().toIso8601String()},
+    // );
   });
 }
 

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:badges/badges.dart';
 import 'package:flutter/animation.dart';
@@ -48,7 +47,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // checkPermission();
   }
 
   @override
@@ -211,12 +209,12 @@ class _HomeState extends State<Home> {
         await prefs?.reload();
         if (mounted)
           setState(() {
-            print("op");
             alerted = prefs?.getBool("alerted") ?? false;
           });
       }
     });
-
+    checkAlertSharedPreferences();
+    checkPermission();
     super.initState();
   }
 
@@ -232,6 +230,7 @@ class _HomeState extends State<Home> {
     if (mounted)
       setState(() {
         alerted = prefs?.getBool("alerted") ?? false;
+        print(alerted);
       });
   }
 
@@ -464,7 +463,9 @@ class _HomeState extends State<Home> {
                           SizedBox(
                             width: 120,
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () async {
+                                await openGoogleMap("Hospitals near me");
+                              },
                               child: "Hospitals".text.bold.make(),
                             ),
                           ),
@@ -472,7 +473,9 @@ class _HomeState extends State<Home> {
                           SizedBox(
                             width: 120,
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () async {
+                                await openGoogleMap("Pharmacies near me");
+                              },
                               child: "Pharmacies".text.bold.make(),
                             ),
                           ),
@@ -480,7 +483,9 @@ class _HomeState extends State<Home> {
                           SizedBox(
                             width: 120,
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () async {
+                                await openGoogleMap("Bus Stations near me");
+                              },
                               child: "Bus Stations".text.bold.make(),
                             ),
                           ),
@@ -503,7 +508,7 @@ class _HomeState extends State<Home> {
                     )
                   ],
                 ),
-                WomenQuoteCarousel(),
+                WomenSafteyTipsCarousel(),
               ]),
             ).expand(),
           ],
@@ -606,6 +611,8 @@ class _HomeState extends State<Home> {
           Fluttertoast.showToast(
               msg: "Contacts are being notified about false SOS.");
           link = "I am safe, track me here\n$li";
+          final service = FlutterBackgroundService();
+          service.sendData({"action": "alertOff"});
         }
 
         for (int i = 0; i < numbers.length; i++) {
