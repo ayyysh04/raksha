@@ -17,9 +17,13 @@ samples, guidance on mobile development, and a full API reference.
 
 ## Steps to deploy
  1.download the zip and extract the project
+ 
  2.downoad flutter sdk and vs code
+ 
  3.run in terminal :flutter run or flutter build apk--release (creates the apk)
+ 
                or
+               
  1.Download and intall prebuild apk from build apk folder
  
  
