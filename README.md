@@ -24,6 +24,6 @@ samples, guidance on mobile development, and a full API reference.
  
                or
                
- 1.Download and intall prebuild apk from build apk folder
+ 1.Download and install prebuild apk from build apk folder
  
  
