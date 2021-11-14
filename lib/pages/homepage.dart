@@ -311,7 +311,9 @@ class _HomeState extends State<Home> {
               children: [
                 "Tools".text.size(20).bold.make(),
                 5.widthBox,
-                Divider().expand(),
+                Divider(
+                  thickness: 2,
+                ).expand(),
               ],
             ),
             SingleChildScrollView(
@@ -335,7 +337,7 @@ class _HomeState extends State<Home> {
                     children: <Widget>[
                       SizedBox(
                         width: 120,
-                        child: ElevatedButton(
+                        child: TextButton(
                           onPressed: () async {
                             await Telephony.instance.dialPhoneNumber("100");
                           },
@@ -351,7 +353,7 @@ class _HomeState extends State<Home> {
                       5.widthBox,
                       SizedBox(
                         width: 150,
-                        child: ElevatedButton(
+                        child: TextButton(
                           onPressed: () async {
                             await Telephony.instance.dialPhoneNumber("1091");
                           },
@@ -367,7 +369,7 @@ class _HomeState extends State<Home> {
                       5.widthBox,
                       SizedBox(
                         width: 150,
-                        child: ElevatedButton(
+                        child: TextButton(
                           clipBehavior: Clip.antiAlias,
                           onPressed: () async {
                             await Telephony.instance.dialPhoneNumber("1291");
@@ -384,7 +386,7 @@ class _HomeState extends State<Home> {
                       5.widthBox,
                       SizedBox(
                         width: 150,
-                        child: ElevatedButton(
+                        child: TextButton(
                           onPressed: () async {
                             await Telephony.instance.dialPhoneNumber("101");
                           },
@@ -400,7 +402,7 @@ class _HomeState extends State<Home> {
                       5.widthBox,
                       SizedBox(
                         width: 150,
-                        child: ElevatedButton(
+                        child: TextButton(
                           onPressed: () async {
                             await Telephony.instance.dialPhoneNumber("102");
                           },
@@ -416,8 +418,8 @@ class _HomeState extends State<Home> {
                       5.widthBox,
                       SizedBox(
                         width: 150,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
+                        child: TextButton(
+                          style: TextButton.styleFrom(
                               padding: EdgeInsets.symmetric(horizontal: 5)),
                           onPressed: () async {
                             await Telephony.instance.dialPhoneNumber("112");
@@ -453,7 +455,7 @@ class _HomeState extends State<Home> {
                         children: <Widget>[
                           SizedBox(
                             width: 120,
-                            child: ElevatedButton(
+                            child: TextButton(
                               onPressed: () async {
                                 await openGoogleMap("Police Stations near me");
                               },
@@ -463,7 +465,7 @@ class _HomeState extends State<Home> {
                           5.widthBox,
                           SizedBox(
                             width: 120,
-                            child: ElevatedButton(
+                            child: TextButton(
                               onPressed: () async {
                                 await openGoogleMap("Hospitals near me");
                               },
@@ -473,7 +475,7 @@ class _HomeState extends State<Home> {
                           5.widthBox,
                           SizedBox(
                             width: 120,
-                            child: ElevatedButton(
+                            child: TextButton(
                               onPressed: () async {
                                 await openGoogleMap("Pharmacies near me");
                               },
@@ -483,7 +485,7 @@ class _HomeState extends State<Home> {
                           5.widthBox,
                           SizedBox(
                             width: 120,
-                            child: ElevatedButton(
+                            child: TextButton(
                               onPressed: () async {
                                 await openGoogleMap("Bus Stations near me");
                               },

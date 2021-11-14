@@ -35,6 +35,20 @@ class MyTheme {
                 borderRadius: new BorderRadius.circular(30.0),
               )),
         ),
+        textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(
+                primary: Vx.white,
+                backgroundColor: Vx.red400,
+                padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(30.0),
+                ))),
+        buttonTheme: ButtonThemeData(
+            padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+            shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(30.0),
+            ),
+            buttonColor: Vx.red400),
 
         primarySwatch: Colors.deepPurple,
         fontFamily: GoogleFonts.poppins().fontFamily,
