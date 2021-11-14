@@ -85,9 +85,9 @@ void onStart() async {
               return;
             } else {
               for (int i = 0; i < numbers.length; i++) {
-                // Telephony.backgroundInstance.sendSms(
-                //     to: numbers[i].split("***")[1],
-                //     message: "Help Me! Track me here.\n$link");
+                Telephony.backgroundInstance.sendSms(
+                    to: numbers[i].split("***")[1],
+                    message: "Help Me! Track me here.\n$link");
               }
               prefs.setBool("alerted", true);
               FlutterBackgroundService().sendData(

@@ -82,6 +82,6 @@ class SplashScreenWidget extends StatelessWidget {
       await Future.delayed(Duration(seconds: 3));
       return Future.value(HomePage());
     } else
-      return Future.value(OnboardScreen());
+      return Future.value(OnBoardingPage());
   }
 }

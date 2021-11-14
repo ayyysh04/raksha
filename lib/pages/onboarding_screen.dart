@@ -1,75 +1,108 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:introduction_screen/introduction_screen.dart';
 import 'package:raksha/pages/homepage.dart';
+import 'package:velocity_x/velocity_x.dart';
 
-class OnboardScreen extends StatefulWidget {
-  const OnboardScreen({Key? key}) : super(key: key);
-
+class OnBoardingPage extends StatefulWidget {
   @override
-  _OnboardScreenState createState() => _OnboardScreenState();
+  _OnBoardingPageState createState() => _OnBoardingPageState();
 }
 
-class _OnboardScreenState extends State<OnboardScreen> {
-  @override
-  void initState() {
-    super.initState();
+class _OnBoardingPageState extends State<OnBoardingPage> {
+  final introKey = GlobalKey<IntroductionScreenState>();
 
-    Timer(Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomePage(),
-        ),
-      );
-    });
+  void _onIntroEnd(context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => HomePage()),
+    );
+  }
+
+  Widget _buildFullscrenImage() {
+    return Image.asset(
+      'assets/fullscreen.jpg',
+      fit: BoxFit.cover,
+      height: double.infinity,
+      width: double.infinity,
+      // alignment: Alignment.center,
+    );
+  }
+
+  Widget _buildImage(String assetName, [double width = 350]) {
+    return Image.asset('assets/$assetName', width: width);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Color(0xFFFD8080),
-        body: Stack(
-          children: [
-            // Align(
-            //     alignment: Alignment.center,
-            //     child: Lottie.asset('assets/blossoms.json',
-            //         height: MediaQuery.of(context).size.width * 1.2))
-            // ,
-            Align(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                padding: EdgeInsets.only(top: 80),
-                child: Image.asset(
-                  "assets/images/logo.png",
-                  height: 100,
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 180.0),
-                child: Text(
-                  "RAKSHA",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24),
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 140.0),
-                child: Text(
-                  "You deserve to be safe!",
-                  style: TextStyle(color: Colors.white, fontSize: 18),
-                ),
-              ),
-            ),
-          ],
-        ));
+    const bodyStyle = TextStyle(fontSize: 19.0);
+
+    const pageDecoration = const PageDecoration(
+        titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700),
+        bodyTextStyle: bodyStyle,
+        pageColor: Colors.white,
+        imagePadding: EdgeInsets.zero,
+        footerPadding: EdgeInsets.zero,
+        titlePadding: EdgeInsets.zero,
+        descriptionPadding: EdgeInsets.zero);
+
+    return IntroductionScreen(
+      key: introKey,
+      globalBackgroundColor: Colors.white,
+      pages: [
+        PageViewModel(
+          title: "Raksha",
+          body: "A Women Security App",
+          image: _buildImage('img1.jpg'),
+          decoration: pageDecoration,
+        ),
+        PageViewModel(
+          title: "Call Emergency number in one tap",
+          body: "",
+          image: _buildImage('img2.jpg'),
+          decoration: pageDecoration,
+        ),
+        PageViewModel(
+          title: "SOS message in one Tap",
+          body: "",
+          image: _buildImage('img3.jpg'),
+          decoration: pageDecoration,
+        ),
+        PageViewModel(
+          title: "",
+          body: "",
+          image: _buildFullscrenImage(),
+          decoration: pageDecoration.copyWith(fullScreen: true),
+        ),
+      ],
+      onSkip: () => introKey.currentState?.animateScroll(3),
+      done: Container(
+          decoration: BoxDecoration(
+              color: Vx.amber300,
+              border: Border.all(),
+              borderRadius: BorderRadius.circular(20)),
+          child: "Start".text.size(18).make().pSymmetric(h: 10, v: 10)),
+      doneColor: Vx.black,
+      onDone: () => _onIntroEnd(context),
+      showSkipButton: true,
+      showDoneButton: true,
+      skipFlex: 0,
+      nextFlex: 0,
+      skip: 'Skip'.text.color(Vx.black).xl.make(),
+      next: const Icon(
+        Icons.arrow_forward,
+        color: Vx.black,
+        size: 35,
+      ),
+      curve: Curves.fastLinearToSlowEaseIn,
+      controlsMargin: const EdgeInsets.all(16),
+      controlsPadding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
+      dotsDecorator: const DotsDecorator(
+        size: Size(10.0, 10.0),
+        color: Color(0xFFBDBDBD),
+        activeSize: Size(22.0, 10.0),
+        activeShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(25.0)),
+        ),
+      ),
+    );
   }
 }

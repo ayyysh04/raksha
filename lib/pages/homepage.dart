@@ -52,6 +52,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       // extendBody: true,
       appBar: AppBar(
         title: "Raksha".text.xl3.make(),
@@ -647,7 +648,6 @@ class _HomeState extends State<Home> {
         context: context,
         builder: (context) {
           return Container(
-            height: MediaQuery.of(context).size.height / 2.7,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.only(
@@ -656,6 +656,7 @@ class _HomeState extends State<Home> {
               ),
             ),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(height: 15),
                 Row(
@@ -679,30 +680,37 @@ class _HomeState extends State<Home> {
                     ),
                   ],
                 ),
-                Container(
-                  margin: const EdgeInsets.all(20.0),
-                  padding: const EdgeInsets.all(20.0),
-                  child: PinPut(
-                    onSaved: (value) {
-                      print(value);
-                    },
-                    fieldsCount: 4,
-                    onSubmit: (String pin) =>
-                        _showSnackBar(pin, context, userPin),
-                    focusNode: _pinPutFocusNode,
-                    controller: _pinPutController,
-                    submittedFieldDecoration: _pinPutDecoration.copyWith(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    selectedFieldDecoration: _pinPutDecoration,
-                    followingFieldDecoration: _pinPutDecoration.copyWith(
-                      borderRadius: BorderRadius.circular(5.0),
-                      border: Border.all(
-                        color: Colors.deepPurpleAccent.withOpacity(.5),
+                Padding(
+                  padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom),
+                  child: Container(
+                    margin: const EdgeInsets.all(20.0),
+                    padding: const EdgeInsets.all(20.0),
+                    child: PinPut(
+                      onSaved: (value) {
+                        print(value);
+                      },
+                      fieldsCount: 4,
+                      onSubmit: (String pin) {
+                        Navigator.pop(context);
+                        _showSnackBar(pin, context, userPin);
+                        _pinPutController.clear();
+                      },
+                      focusNode: _pinPutFocusNode,
+                      controller: _pinPutController,
+                      submittedFieldDecoration: _pinPutDecoration.copyWith(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      selectedFieldDecoration: _pinPutDecoration,
+                      followingFieldDecoration: _pinPutDecoration.copyWith(
+                        borderRadius: BorderRadius.circular(5.0),
+                        border: Border.all(
+                          color: Colors.deepPurpleAccent.withOpacity(.5),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                )
               ],
             ),
           );
